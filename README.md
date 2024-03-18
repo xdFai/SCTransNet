@@ -1,5 +1,8 @@
 # SCTransNet: Spatial-channel Cross Transformer Network for Infrared Small Target Detection
 
+# Chanlleges and inspiration   
+![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture01.png)
+
 # Structure
 ![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture02.png)
 
