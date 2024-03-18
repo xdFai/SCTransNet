@@ -42,7 +42,7 @@ python demo.py
 | ------------- |:-------------:|:-----:|:-----:|:-----:|
 | DNANet-ResNet-18| 46.73 | 81.29 | 33.87 | [[Weights]](https://drive.google.com/file/d/1TF0bZRMsGuKzMhlHKH1LygScBveMcCS2/view?usp=sharing) |
 
-| Model         | mIoU (x10(-2)) | nIoU (x10(-2)) | F-measure (x10(-2)) | Pd (x10(-2))|  Fa (x10(-6)) ||
+| Model         | mIoU (x10(-2)) | nIoU (x10(-2)) | F-measure (x10(-2))||
 | ------------- |:-------------:|:-----:|:-----:|:-----:|
 | NUAA-SIRST    | 77.50  |  81.08 | 87.32 | 96.95 |
 
