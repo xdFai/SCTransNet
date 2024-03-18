@@ -28,7 +28,7 @@ python train.py
 ```bash
 python test.py
 ```
-#### 2. demoo.
+#### 2. demo.
 
 ```bash
 python demo.py
