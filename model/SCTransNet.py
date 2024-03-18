@@ -17,32 +17,38 @@ import torch.nn.functional as F
 import ml_collections
 from einops import rearrange
 import numbers
-
+from thop import profile
 
 def get_CTranS_config():
     config = ml_collections.ConfigDict()
     config.transformer = ml_collections.ConfigDict()
-    config.KV_size = 480  # KV channel dimension size = C1 + C2 + C3 + C4
-    config.transformer.num_layers = 4  # the number of SCTB
-    config.expand_ratio = 2.66  # CFN channel dimension expand ratio
-    config.base_channel = 32  # base channel of SCTransNet
+    config.KV_size = 480  # KV_size = Q1 + Q2 + Q3 + Q4
+    config.transformer.num_heads = 4
+    config.transformer.num_layers = 4
     config.patch_sizes = [16, 8, 4, 2]
+    config.base_channel = 32  # base channel of U-Net
     config.n_classes = 1
+
+    # ********** useless **********
+    config.transformer.embeddings_dropout_rate = 0.1
+    config.transformer.attention_dropout_rate = 0.1
+    config.transformer.dropout_rate = 0
     return config
 
 
 class Channel_Embeddings(nn.Module):
-    """Construct the embeddings from patch, position embeddings.
-    """
-
     def __init__(self, config, patchsize, img_size, in_channels):
         super().__init__()
         img_size = _pair(img_size)
         patch_size = _pair(patchsize)
+        n_patches = (img_size[0] // patch_size[0]) * (img_size[1] // patch_size[1])  # 14 * 14 = 196
+
         self.patch_embeddings = Conv2d(in_channels=in_channels,
                                        out_channels=in_channels,
                                        kernel_size=patch_size,
                                        stride=patch_size)
+        self.position_embeddings = nn.Parameter(torch.zeros(1, n_patches, in_channels))
+        self.dropout = Dropout(config.transformer["embeddings_dropout_rate"])
 
     def forward(self, x):
         if x is None:
@@ -63,10 +69,13 @@ class Reconstruct(nn.Module):
         self.activation = nn.ReLU(inplace=True)
         self.scale_factor = scale_factor
 
+    # def forward(self, x, h, w):
     def forward(self, x):
         if x is None:
             return None
+
         x = nn.Upsample(scale_factor=self.scale_factor, mode='bilinear')(x)
+
         out = self.conv(x)
         out = self.norm(out)
         out = self.activation(out)
@@ -74,14 +83,17 @@ class Reconstruct(nn.Module):
 
 
 # spatial-embedded Single-head Channel-cross Attention (SSCA)
-class SSCA(nn.Module):
+class Attention_org(nn.Module):
     def __init__(self, config, vis, channel_num):
-        super(SSCA, self).__init__()
+        super(Attention_org, self).__init__()
         self.vis = vis
         self.KV_size = config.KV_size
+        self.channel_num = channel_num
         self.num_attention_heads = 1
         self.psi = nn.InstanceNorm2d(self.num_attention_heads)
         self.softmax = Softmax(dim=3)
+
+        # self.temperature = nn.Parameter(torch.ones(num_heads, 1, 1))
         self.mhead1 = nn.Conv2d(channel_num[0], channel_num[0] * self.num_attention_heads, kernel_size=1, bias=False)
         self.mhead2 = nn.Conv2d(channel_num[1], channel_num[1] * self.num_attention_heads, kernel_size=1, bias=False)
         self.mhead3 = nn.Conv2d(channel_num[2], channel_num[2] * self.num_attention_heads, kernel_size=1, bias=False)
@@ -89,27 +101,21 @@ class SSCA(nn.Module):
         self.mheadk = nn.Conv2d(self.KV_size, self.KV_size * self.num_attention_heads, kernel_size=1, bias=False)
         self.mheadv = nn.Conv2d(self.KV_size, self.KV_size * self.num_attention_heads, kernel_size=1, bias=False)
 
-        self.q1 = nn.Conv2d(channel_num[0] * self.num_attention_heads, channel_num[0] * self.num_attention_heads,
-                            kernel_size=3, stride=1,
+        self.q1 = nn.Conv2d(channel_num[0] * self.num_attention_heads, channel_num[0] * self.num_attention_heads, kernel_size=3, stride=1,
                             padding=1,
                             groups=channel_num[0] * self.num_attention_heads // 2, bias=False)
-        self.q2 = nn.Conv2d(channel_num[1] * self.num_attention_heads, channel_num[1] * self.num_attention_heads,
-                            kernel_size=3, stride=1,
+        self.q2 = nn.Conv2d(channel_num[1] * self.num_attention_heads, channel_num[1] * self.num_attention_heads, kernel_size=3, stride=1,
                             padding=1,
                             groups=channel_num[1] * self.num_attention_heads // 2, bias=False)
-        self.q3 = nn.Conv2d(channel_num[2] * self.num_attention_heads, channel_num[2] * self.num_attention_heads,
-                            kernel_size=3, stride=1,
+        self.q3 = nn.Conv2d(channel_num[2] * self.num_attention_heads, channel_num[2] * self.num_attention_heads, kernel_size=3, stride=1,
                             padding=1,
                             groups=channel_num[2] * self.num_attention_heads // 2, bias=False)
-        self.q4 = nn.Conv2d(channel_num[3] * self.num_attention_heads, channel_num[3] * self.num_attention_heads,
-                            kernel_size=3, stride=1,
+        self.q4 = nn.Conv2d(channel_num[3] * self.num_attention_heads, channel_num[3] * self.num_attention_heads, kernel_size=3, stride=1,
                             padding=1,
                             groups=channel_num[3] * self.num_attention_heads // 2, bias=False)
-        self.k = nn.Conv2d(self.KV_size * self.num_attention_heads, self.KV_size * self.num_attention_heads,
-                           kernel_size=3, stride=1,
+        self.k = nn.Conv2d(self.KV_size * self.num_attention_heads, self.KV_size * self.num_attention_heads, kernel_size=3, stride=1,
                            padding=1, groups=self.KV_size * self.num_attention_heads, bias=False)
-        self.v = nn.Conv2d(self.KV_size * self.num_attention_heads, self.KV_size * self.num_attention_heads,
-                           kernel_size=3, stride=1,
+        self.v = nn.Conv2d(self.KV_size * self.num_attention_heads, self.KV_size * self.num_attention_heads, kernel_size=3, stride=1,
                            padding=1, groups=self.KV_size * self.num_attention_heads, bias=False)
 
         self.project_out1 = nn.Conv2d(channel_num[0], channel_num[0], kernel_size=1, bias=False)
@@ -117,16 +123,37 @@ class SSCA(nn.Module):
         self.project_out3 = nn.Conv2d(channel_num[2], channel_num[2], kernel_size=1, bias=False)
         self.project_out4 = nn.Conv2d(channel_num[3], channel_num[3], kernel_size=1, bias=False)
 
+
+        # ****************** useless ***************************************
+        self.q1_attn1 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q1_attn2 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q1_attn3 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q1_attn4 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+
+        self.q2_attn1 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q2_attn2 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q2_attn3 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q2_attn4 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+
+        self.q3_attn1 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q3_attn2 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q3_attn3 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q3_attn4 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+
+        self.q4_attn1 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q4_attn2 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q4_attn3 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+        self.q4_attn4 = torch.nn.Parameter(torch.tensor([0.2]), requires_grad=True)
+
     def forward(self, emb1, emb2, emb3, emb4, emb_all):
         b, c, h, w = emb1.shape
-
-        #  spatial-embedded
         q1 = self.q1(self.mhead1(emb1))
         q2 = self.q2(self.mhead2(emb2))
         q3 = self.q3(self.mhead3(emb3))
         q4 = self.q4(self.mhead4(emb4))
         k = self.k(self.mheadk(emb_all))
         v = self.v(self.mheadv(emb_all))
+        # k, v = kv.chunk(2, dim=1)
 
         q1 = rearrange(q1, 'b (head c) h w -> b head c (h w)', head=self.num_attention_heads)
         q2 = rearrange(q2, 'b (head c) h w -> b head c (h w)', head=self.num_attention_heads)
@@ -147,7 +174,6 @@ class SSCA(nn.Module):
         _, _, c4, _ = q4.shape
         _, _, c, _ = k.shape
 
-        # Attention
         attn1 = (q1 @ k.transpose(-2, -1)) / math.sqrt(self.KV_size)
         attn2 = (q2 @ k.transpose(-2, -1)) / math.sqrt(self.KV_size)
         attn3 = (q3 @ k.transpose(-2, -1)) / math.sqrt(self.KV_size)
@@ -238,11 +264,9 @@ class LayerNorm3d(nn.Module):
         h, w = x.shape[-2:]
         return to_4d(self.body(to_3d(x)), h, w)
 
-
-class GSLC(nn.Module):
-
+class eca_layer_2d(nn.Module):
     def __init__(self, channel, k_size=3):
-        super(GSLC, self).__init__()
+        super(eca_layer_2d, self).__init__()
         padding = k_size // 2
         self.avg_pool = nn.AdaptiveAvgPool2d(output_size=1)
         self.conv = nn.Sequential(
@@ -259,7 +283,6 @@ class GSLC(nn.Module):
         out = out.view(x.size(0), x.size(1), 1, 1)
         return out * x
 
-
 # Complementary Feed-forward Network (CFN)
 class FeedForward(nn.Module):
     def __init__(self, dim, ffn_expansion_factor, bias):
@@ -269,49 +292,47 @@ class FeedForward(nn.Module):
 
         self.project_in = nn.Conv2d(dim, hidden_features * 2, kernel_size=1, bias=bias)
 
-        self.dwconv3x3 = nn.Conv2d(hidden_features, hidden_features, kernel_size=3, stride=1, padding=1,
-                                   groups=hidden_features,
+        self.dwconv3x3 = nn.Conv2d(hidden_features, hidden_features, kernel_size=3, stride=1, padding=1, groups=hidden_features,
                                    bias=bias)
-        self.dwconv5x5 = nn.Conv2d(hidden_features, hidden_features, kernel_size=5, stride=1, padding=2,
-                                   groups=hidden_features,
+        self.dwconv5x5 = nn.Conv2d(hidden_features, hidden_features, kernel_size=5, stride=1, padding=2, groups=hidden_features,
                                    bias=bias)
         self.relu3 = nn.ReLU()
         self.relu5 = nn.ReLU()
         self.project_out = nn.Conv2d(hidden_features * 2, dim, kernel_size=1, bias=bias)
-        self.eca = GSLC(dim)
+        self.eca = eca_layer_2d(dim)
 
     def forward(self, x):
-        x_3, x_5 = self.project_in(x).chunk(2, dim=1)
+        x_3,x_5 = self.project_in(x).chunk(2, dim=1)
         x1_3 = self.relu3(self.dwconv3x3(x_3))
         x1_5 = self.relu5(self.dwconv5x5(x_5))
         x = torch.cat([x1_3, x1_5], dim=1)
         x = self.project_out(x)
         x = self.eca(x)
-
         return x
 
+
 #  Spatial-channel Cross Transformer Block (SCTB)
-class SCTB(nn.Module):
+class Block_ViT(nn.Module):
     def __init__(self, config, vis, channel_num):
-        super(SCTB, self).__init__()
-        expand_ratio = config.expand_ratio
+        super(Block_ViT, self).__init__()
         self.attn_norm1 = LayerNorm3d(channel_num[0], LayerNorm_type='WithBias')
         self.attn_norm2 = LayerNorm3d(channel_num[1], LayerNorm_type='WithBias')
         self.attn_norm3 = LayerNorm3d(channel_num[2], LayerNorm_type='WithBias')
         self.attn_norm4 = LayerNorm3d(channel_num[3], LayerNorm_type='WithBias')
         self.attn_norm = LayerNorm3d(config.KV_size, LayerNorm_type='WithBias')
 
-        self.channel_attn = SSCA(config, vis, channel_num)
+        self.channel_attn = Attention_org(config, vis, channel_num)
 
         self.ffn_norm1 = LayerNorm3d(channel_num[0], LayerNorm_type='WithBias')
         self.ffn_norm2 = LayerNorm3d(channel_num[1], LayerNorm_type='WithBias')
         self.ffn_norm3 = LayerNorm3d(channel_num[2], LayerNorm_type='WithBias')
         self.ffn_norm4 = LayerNorm3d(channel_num[3], LayerNorm_type='WithBias')
 
-        self.ffn1 = FeedForward(channel_num[0], ffn_expansion_factor=expand_ratio, bias=False)
-        self.ffn2 = FeedForward(channel_num[1], ffn_expansion_factor=expand_ratio, bias=False)
-        self.ffn3 = FeedForward(channel_num[2], ffn_expansion_factor=expand_ratio, bias=False)
-        self.ffn4 = FeedForward(channel_num[3], ffn_expansion_factor=expand_ratio, bias=False)
+        self.ffn1 = FeedForward(channel_num[0], ffn_expansion_factor=2.66, bias=False)
+        self.ffn2 = FeedForward(channel_num[1], ffn_expansion_factor=2.66, bias=False)
+        self.ffn3 = FeedForward(channel_num[2], ffn_expansion_factor=2.66, bias=False)
+        self.ffn4 = FeedForward(channel_num[3], ffn_expansion_factor=2.66, bias=False)
+
 
     def forward(self, emb1, emb2, emb3, emb4):
         embcat = []
@@ -366,7 +387,7 @@ class Encoder(nn.Module):
         self.encoder_norm3 = LayerNorm3d(channel_num[2], LayerNorm_type='WithBias')
         self.encoder_norm4 = LayerNorm3d(channel_num[3], LayerNorm_type='WithBias')
         for _ in range(config.transformer["num_layers"]):
-            layer = SCTB(config, vis, channel_num)
+            layer = Block_ViT(config, vis, channel_num)
             self.layer.append(copy.deepcopy(layer))
 
     def forward(self, emb1, emb2, emb3, emb4):
@@ -383,7 +404,7 @@ class Encoder(nn.Module):
 
 
 class ChannelTransformer(nn.Module):
-    def __init__(self, config, vis, img_size, channel_num, patchSize):
+    def __init__(self, config, vis, img_size, channel_num=[64, 128, 256, 512], patchSize=[32, 16, 8, 4]):
         super().__init__()
 
         self.patchSize_1 = patchSize[0]
@@ -391,22 +412,15 @@ class ChannelTransformer(nn.Module):
         self.patchSize_3 = patchSize[2]
         self.patchSize_4 = patchSize[3]
         self.embeddings_1 = Channel_Embeddings(config, self.patchSize_1, img_size=img_size, in_channels=channel_num[0])
-        self.embeddings_2 = Channel_Embeddings(config, self.patchSize_2, img_size=img_size // 2,
-                                               in_channels=channel_num[1])
-        self.embeddings_3 = Channel_Embeddings(config, self.patchSize_3, img_size=img_size // 4,
-                                               in_channels=channel_num[2])
-        self.embeddings_4 = Channel_Embeddings(config, self.patchSize_4, img_size=img_size // 8,
-                                               in_channels=channel_num[3])
+        self.embeddings_2 = Channel_Embeddings(config, self.patchSize_2, img_size=img_size // 2, in_channels=channel_num[1])
+        self.embeddings_3 = Channel_Embeddings(config, self.patchSize_3, img_size=img_size // 4, in_channels=channel_num[2])
+        self.embeddings_4 = Channel_Embeddings(config, self.patchSize_4, img_size=img_size // 8, in_channels=channel_num[3])
         self.encoder = Encoder(config, vis, channel_num)
 
-        self.reconstruct_1 = Reconstruct(channel_num[0], channel_num[0], kernel_size=1,
-                                         scale_factor=(self.patchSize_1, self.patchSize_1))
-        self.reconstruct_2 = Reconstruct(channel_num[1], channel_num[1], kernel_size=1,
-                                         scale_factor=(self.patchSize_2, self.patchSize_2))
-        self.reconstruct_3 = Reconstruct(channel_num[2], channel_num[2], kernel_size=1,
-                                         scale_factor=(self.patchSize_3, self.patchSize_3))
-        self.reconstruct_4 = Reconstruct(channel_num[3], channel_num[3], kernel_size=1,
-                                         scale_factor=(self.patchSize_4, self.patchSize_4))
+        self.reconstruct_1 = Reconstruct(channel_num[0], channel_num[0], kernel_size=1, scale_factor=(self.patchSize_1, self.patchSize_1))
+        self.reconstruct_2 = Reconstruct(channel_num[1], channel_num[1], kernel_size=1, scale_factor=(self.patchSize_2, self.patchSize_2))
+        self.reconstruct_3 = Reconstruct(channel_num[2], channel_num[2], kernel_size=1, scale_factor=(self.patchSize_3, self.patchSize_3))
+        self.reconstruct_4 = Reconstruct(channel_num[3], channel_num[3], kernel_size=1, scale_factor=(self.patchSize_4, self.patchSize_4))
 
     def forward(self, en1, en2, en3, en4):
         emb1 = self.embeddings_1(en1)
@@ -414,8 +428,7 @@ class ChannelTransformer(nn.Module):
         emb3 = self.embeddings_3(en3)
         emb4 = self.embeddings_4(en4)
 
-        encoded1, encoded2, encoded3, encoded4, attn_weights = self.encoder(emb1, emb2, emb3,
-                                                                            emb4)  # (B, n_patch, hidden)
+        encoded1, encoded2, encoded3, encoded4, attn_weights = self.encoder(emb1, emb2, emb3, emb4)  # (B, n_patch, hidden)
 
         x1 = self.reconstruct_1(encoded1) if en1 is not None else None
         x2 = self.reconstruct_2(encoded2) if en2 is not None else None
@@ -448,8 +461,6 @@ def _make_nConv(in_channels, out_channels, nb_Conv, activation='ReLU'):
 
 
 class CBN(nn.Module):
-    """(convolution => [BN] => ReLU)"""
-
     def __init__(self, in_channels, out_channels, activation='ReLU'):
         super(CBN, self).__init__()
         self.conv = nn.Conv2d(in_channels, out_channels,
@@ -461,6 +472,17 @@ class CBN(nn.Module):
         out = self.conv(x)
         out = self.norm(out)
         return self.activation(out)
+
+
+class DownBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, nb_Conv, activation='ReLU'):
+        super(DownBlock, self).__init__()
+        self.maxpool = nn.MaxPool2d(2)
+        self.nConvs = _make_nConv(in_channels, out_channels, nb_Conv, activation)
+
+    def forward(self, x):
+        out = self.maxpool(x)
+        return self.nConvs(out)
 
 
 class Flatten(nn.Module):
@@ -513,6 +535,7 @@ class Res_block(nn.Module):
         self.relu = nn.LeakyReLU(inplace=True)
         self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1)
         self.bn2 = nn.BatchNorm2d(out_channels)
+        # self.fca = FCA_Layer(out_channels)
         if stride != 1 or out_channels != in_channels:
             self.shortcut = nn.Sequential(
                 nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride),
@@ -529,6 +552,7 @@ class Res_block(nn.Module):
         out = self.relu(out)
         out = self.conv2(out)
         out = self.bn2(out)
+
         out += residual
         out = self.relu(out)
         return out
@@ -541,7 +565,9 @@ class SCTransNet(nn.Module):
         self.deepsuper = deepsuper
         print('Deep-Supervision:', deepsuper)
         self.mode = mode
-        in_channels = config.base_channel  # 32
+        self.n_channels = n_channels
+        self.n_classes = n_classes
+        in_channels = config.base_channel  # basic channel 64
         block = Res_block
         self.pool = nn.MaxPool2d(2, 2)
         self.inc = self._make_layer(block, n_channels, in_channels)
@@ -549,13 +575,9 @@ class SCTransNet(nn.Module):
         self.down_encoder2 = self._make_layer(block, in_channels * 2, in_channels * 4, 1)  # 64  128
         self.down_encoder3 = self._make_layer(block, in_channels * 4, in_channels * 8, 1)  # 64  128
         self.down_encoder4 = self._make_layer(block, in_channels * 8, in_channels * 8, 1)  # 64  128
-
-
-        self.SCT = ChannelTransformer(config, vis, img_size,
-                                       channel_num=[in_channels, in_channels * 2, in_channels * 4, in_channels * 8],
-                                       patchSize=config.patch_sizes)
-
-        # CCA
+        self.mtc = ChannelTransformer(config, vis, img_size,
+                                      channel_num=[in_channels, in_channels * 2, in_channels * 4, in_channels * 8],
+                                      patchSize=config.patch_sizes)
         self.up_decoder4 = UpBlock_attention(in_channels * 16, in_channels * 4, nb_Conv=2)
         self.up_decoder3 = UpBlock_attention(in_channels * 8, in_channels * 2, nb_Conv=2)
         self.up_decoder2 = UpBlock_attention(in_channels * 4, in_channels, nb_Conv=2)
@@ -582,33 +604,29 @@ class SCTransNet(nn.Module):
         x3 = self.down_encoder2(self.pool(x2))  # 256 56  56
         x4 = self.down_encoder3(self.pool(x3))  # 512 28  28
         d5 = self.down_encoder4(self.pool(x4))  # 512 14  14
-
-        # Skip Connection
+        #  CCT
         f1 = x1
         f2 = x2
         f3 = x3
         f4 = x4
-
-        x1, x2, x3, x4, att_weights = self.SCT(x1, x2, x3, x4)
-
+        #  CCT
+        x1, x2, x3, x4, att_weights = self.mtc(x1, x2, x3, x4)
         x1 = x1 + f1
         x2 = x2 + f2
         x3 = x3 + f3
         x4 = x4 + f4
-
         #  Feature fusion
         d4 = self.up_decoder4(d5, x4)
         d3 = self.up_decoder3(d4, x3)
         d2 = self.up_decoder2(d3, x2)
         out = self.outc(self.up_decoder1(d2, x1))
-
-        # Deep Supervision
+        # deep supervision
         if self.deepsuper:
             gt_5 = self.gt_conv5(d5)
             gt_4 = self.gt_conv4(d4)
             gt_3 = self.gt_conv3(d3)
             gt_2 = self.gt_conv2(d2)
-
+            # 原始深监督
             gt5 = F.interpolate(gt_5, scale_factor=16, mode='bilinear', align_corners=True)
             gt4 = F.interpolate(gt_4, scale_factor=8, mode='bilinear', align_corners=True)
             gt3 = F.interpolate(gt_3, scale_factor=4, mode='bilinear', align_corners=True)
@@ -616,9 +634,7 @@ class SCTransNet(nn.Module):
             d0 = self.outconv(torch.cat((gt2, gt3, gt4, gt5, out), 1))
 
             if self.mode == 'train':
-                return (
-                    torch.sigmoid(gt5), torch.sigmoid(gt4), torch.sigmoid(gt3), torch.sigmoid(gt2), torch.sigmoid(d0),
-                    torch.sigmoid(out))
+                return (torch.sigmoid(gt5), torch.sigmoid(gt4), torch.sigmoid(gt3), torch.sigmoid(gt2), torch.sigmoid(d0), torch.sigmoid(out))
             else:
                 return torch.sigmoid(out)
         else:
@@ -628,7 +644,11 @@ class SCTransNet(nn.Module):
 if __name__ == '__main__':
     config_vit = get_CTranS_config()
     model = SCTransNet(config_vit, mode='train', deepsuper=True)
-    # model = model.cuda()
-    # inputs = torch.rand(2, 1, 256, 256).cuda()
+    model = model
     inputs = torch.rand(2, 1, 256, 256)
     output = model(inputs)
+    flops, params = profile(model, (inputs,))
+
+    print("-" * 50)
+    print('FLOPs = ' + str(flops / 1000 ** 3) + ' G')
+    print('Params = ' + str(params / 1000 ** 2) + ' M')
