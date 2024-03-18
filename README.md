@@ -6,4 +6,6 @@ When this paper is accepted, we will upload the full code along with the model w
 ![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture01.png)
 
 # Structure
+![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture02.png)
 
+![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture03.png)
