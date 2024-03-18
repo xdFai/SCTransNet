@@ -38,6 +38,13 @@ python demo.py
 
 #### Quantitative Results on NUAA-SIRST, NUDT-SIRST, and IRSTD-1K
 
+| Model         | mIoU (x10(-2)) | Pd (x10(-2))|  Fa (x10(-6)) ||
+| ------------- |:-------------:|:-----:|:-----:|:-----:|
+| DNANet-VGG-10 | 85.23 | 96.95 | 6.782|
+| DNANet-ResNet-10| 86.36 | 97.39 | 6.897 |
+| DNANet-ResNet-18| 87.09 | 98.73 | 4.223 |
+| DNANet-ResNet-18| 88.61 | 98.42 | 4.30 | [[Weights]](https://drive.google.com/file/d/1NDvjOiWecfWNPaO12KeIgiJMTKSFS6wj/view?usp=sharing) |
+| DNANet-ResNet-34| 86.87 | 97.98 | 3.710 |
 
 | Dataset       | mIoU (x10(-2)) | mIoU (x10(-2)) | F-measure (x10(-2)) | Pd (x10(-2))|  Fa (x10(-6)) ||
 | ------------- |:-------------:|:-----:|:-----:|:-----:|
