@@ -1,8 +1,16 @@
 import torch
-from PIL import Image
-import random
 import numpy as np
+from PIL import Image
+from torchvision import transforms
+from torch.utils.data.dataset import Dataset
+import random
+import matplotlib.pyplot as plt
+import cv2
+import numpy as np
+import os
+import math
 import torch.nn as nn
+from skimage import measure
 from warmup_scheduler import GradualWarmupScheduler
 import torch.nn.functional as F
 import os
@@ -24,6 +32,14 @@ def weights_init_xavier(m):
     classname = m.__class__.__name__
     if classname.find('Conv2d') != -1 and classname.find('SplAtConv2d') == -1:
         init.xavier_normal(m.weight.data)
+
+
+# def weights_init_xavier(m):
+#     classname = m.__class__.__name__
+#     if classname.find('Conv2d') != -1:
+#         # init.kaiming_normal_(m.weight.data,a=0, mode='fan_in', nonlinearity='leaky_relu')
+#         init.xavier_normal(m.weight.data)
+
 
 def weights_init_kaiming(m):
     classname = m.__class__.__name__
@@ -146,15 +162,24 @@ def get_optimizer(net, optimizer_name, scheduler_name, optimizer_settings, sched
         optimizer = torch.optim.Adam(net.parameters(), lr=optimizer_settings['lr'])
     if optimizer_name == 'Adamweight':
         optimizer = torch.optim.Adam(net.parameters(), lr=optimizer_settings['lr'], weight_decay=1e-3)
+
     elif optimizer_name == 'Adagrad':
         optimizer = torch.optim.Adagrad(net.parameters(), lr=optimizer_settings['lr'])
     elif optimizer_name == 'SGD':
         optimizer = torch.optim.SGD(net.parameters(), lr=optimizer_settings['lr'],
                                     momentum=0.9,
                                     weight_decay=scheduler_settings['weight_decay'])
+    # elif optimizer_name == 'AdamW':
+    #     optimizer = torch.optim.AdamW(net.parameters(), lr=optimizer_settings['lr'], betas=optimizer_settings['betas'],
+    #                                   eps=optimizer_settings['eps'], weight_decay=optimizer_settings['weight_decay'],
+    #                                   amsgrad=optimizer_settings['amsgrad'])
+
     if scheduler_name == 'MultiStepLR':
         scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=scheduler_settings['step'],
                                                          gamma=scheduler_settings['gamma'])
+    # elif scheduler_name == 'DNACosineAnnealingLR':
+    #     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=scheduler_settings['epochs'],
+    #                                                            eta_min=scheduler_settings['eta_min'])
     elif scheduler_name == 'CosineAnnealingLR':
         warmup_epochs = 10
         scheduler_cosine = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=scheduler_settings['epochs'] - warmup_epochs,
@@ -169,7 +194,17 @@ def get_optimizer(net, optimizer_name, scheduler_name, optimizer_settings, sched
                                            after_scheduler=scheduler_cosine)
 
     elif scheduler_name == 'CosineAnnealingLRw0':
+        # warmup_epochs = 0
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=scheduler_settings['epochs'], eta_min=scheduler_settings['eta_min'])
+        # scheduler_cosine = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=scheduler_settings['epochs'] - warmup_epochs,
+        #                                                               eta_min=1e-5)
+        # scheduler = GradualWarmupScheduler(optimizer, multiplier=1, total_epoch=warmup_epochs,
+        #                                    after_scheduler=scheduler_cosine)
+
+        # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=scheduler_settings['T_max'],
+        #                                                        eta_min=scheduler_settings['eta_min'],
+        #                                                        last_epoch=scheduler_settings['last_epoch'])
+        # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=scheduler_settings['epochs'], eta_min=scheduler_settings['eta_min'])
 
     return optimizer, scheduler
 
