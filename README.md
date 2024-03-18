@@ -36,6 +36,12 @@ python demo.py
 
 ## Results and Trained Models
 
+#### Qualitative Results
+![outline](picture03.png)
+
+
+
+
 #### Quantitative Results on NUAA-SIRST, NUDT-SIRST, and IRSTD-1K
 
 | Model         | mIoU (x10(-2)) | nIoU (x10(-2)) | F-measure (x10(-2))| Pd (x10(-2))|  Fa (x10(-6))|
@@ -47,6 +53,7 @@ python demo.py
 
 
 *This code is highly borrowed from [IRSTD-Toolbox](https://github.com/XinyiYing/BasicIRSTD). Thanks to Xinyi Ying.
+
 *The overall repository style is highly borrowed from [DNA-Net](https://github.com/YeRen123455/Infrared-Small-Target-Detection). Thanks to Boyang Li.
 
 
