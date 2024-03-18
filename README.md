@@ -28,7 +28,7 @@ python train.py
 ```bash
 python test.py
 ```
-#### 2. demo.
+#### 3. demo.
 
 ```bash
 python demo.py
@@ -43,7 +43,11 @@ python demo.py
 | NUAA-SIRST    | 77.50  |  81.08 | 87.32 | 96.95 | 13.92 |
 | NUDT-SIRST    | 94.09  |  94.38 | 96.95 | 98.62 | 4.29  | 
 | IRSTD-1K      | 68.03  |  68.15 | 80.96 | 93.27 | 10.74 |
-| [[Weights]](https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing)||||
+| [[Weights]](https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing)|
+
+
+*This code is highly borrowed from [IRSTD-Toolbox](https://github.com/XinyiYing/BasicIRSTD). Thanks to Xinyi Ying.
+*The overall repository style is highly borrowed from [DNA-Net](https://github.com/YeRen123455/Infrared-Small-Target-Detection). Thanks to Boyang Li.
 
 
 
