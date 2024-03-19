@@ -23,7 +23,7 @@ We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD
 
 ## Usage
 
-#### 0. Data
+#### 1. Data
 
 * **Our project has the following structure:**
   ```
@@ -70,19 +70,14 @@ We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD
   ```
 
 
-##### 1. Train.
+##### 2. Train.
 ```bash
 python train.py
 ```
 
-#### 2. Test.
+#### 3. Test and demo.
 ```bash
 python test.py
-```
-#### 3. demo.
-
-```bash
-python demo.py
 ```
 
 ## Results and Trained Models
