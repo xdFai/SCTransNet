@@ -11,6 +11,7 @@
 
 # Introduction
 SCTransNet: Spatial-channel Cross Transformer Network for Infrared Small Target Detection, Shuai Yuan, Hanlin Qin, Xiang Yan, Naveed Akhtar, Aimal Main, arxiv 2024 [[Paper]](https://arxiv.org/pdf/2401.15583.pdf)
+[[Weight]](https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing)
 
 We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD task. Experiments on both public (e.g., NUAA-SIRST, NUDT-SIRST, IRSTD-1K) demonstrate the effectiveness of our method. Our main contributions are as follows:
 
