@@ -412,9 +412,10 @@ def test():
     eval_05 = PD_FA()
     ROC_05 = ROCMetric05(nclass=1, bins=10)
     config_vit = config.get_SCTrans_config()
-    net = SCTransNet(config_vit, mode='test', deepsuper=True)
-    # state_dict = torch.load(opt.pth_dir)
-    state_dict = torch.load(opt.pth_dir, map_location='cpu')
+    # net = SCTransNet(config_vit, mode='test', deepsuper=True)
+    net = SCTransNet(config_vit, mode='test', deepsuper=True).cuda()
+    state_dict = torch.load(opt.pth_dir)
+    # state_dict = torch.load(opt.pth_dir, map_location='cpu')
     new_state_dict = OrderedDict()
     #
     for k, v in state_dict['state_dict'].items():
@@ -425,10 +426,12 @@ def test():
     tbar = tqdm(test_loader)
     with torch.no_grad():
         for idx_iter, (img, gt_mask, size, img_dir) in enumerate(tbar):
-            img = Variable(img)
-            pred = net.forward(img)
-            pred = pred[:, :, :size[0], :size[1]]
-            gt_mask = gt_mask[:, :, :size[0], :size[1]]
+            # img = Variable(img)
+            pred = net.forward(img).cuda()
+            # pred = pred[:, :, :size[0], :size[1]]
+            pred = pred[:, :, :size[0], :size[1]].cuda()
+            # gt_mask = gt_mask[:, :, :size[0], :size[1]]
+            gt_mask = gt_mask[:, :, :size[0], :size[1]].cuda()
 
             # Fix  threshold ##########################################################
             # IOU
