@@ -4,7 +4,7 @@
 ![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture01.png)
 
 # Structure
-![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture02.png)
+![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture2.png)
 
 ![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture03.png)
 
