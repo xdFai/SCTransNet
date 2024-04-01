@@ -28,7 +28,7 @@ We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD
 * **Our project has the following structure:**
   ```
   ├──./datasets/
-  │    ├── NUAA-SIRST
+  │    ├── IRSTD-1K
   │    │    ├── images
   │    │    │    ├── XDU0.png
   │    │    │    ├── XDU1.png
