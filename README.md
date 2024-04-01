@@ -38,8 +38,8 @@ We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD
   │    │    │    ├── XDU1.png
   │    │    │    ├── ...
   │    │    ├── img_idx
-  │    │    │    ├── train_NUAA-SIRST.txt
-  │    │    │    ├── test_NUAA-SIRST.txt
+  │    │    │    ├── train_IRSTD-1K.txt
+  │    │    │    ├── test_IRSTD-1K.txt
   │    ├── NUDT-SIRST
   │    │    ├── images
   │    │    │    ├── 000001.png
