@@ -21,6 +21,23 @@ We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD
 
 3. We devise a novel complementary feed-forward network (CFN) by crossing spatial-channel information to enhance the semantic difference between the target and background.
 
+## Citation
+
+If you find the code useful, please consider citing our paper using the following BibTeX entry.
+
+```
+@ARTICLE{10486932,
+  author={Yuan, Shuai and Qin, Hanlin and Yan, Xiang and Akhtar, Naveed and Mian, Ajmal},
+  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
+  title={SCTransNet: Spatial-channel Cross Transformer Network for Infrared Small Target Detection}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-1},
+  keywords={Semantics;Transformers;Decoding;Feature extraction;Task analysis;Object detection;Visualization;Infrared small target detection;transformer;cross attention;CNN;deep learning},
+  doi={10.1109/TGRS.2024.3383649}}
+```
+
 ## Usage
 
 #### 1. Data
