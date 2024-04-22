@@ -29,12 +29,12 @@ If you find the code useful, please consider citing our paper using the followin
 @ARTICLE{10486932,
   author={Yuan, Shuai and Qin, Hanlin and Yan, Xiang and Akhtar, Naveed and Mian, Ajmal},
   journal={IEEE Transactions on Geoscience and Remote Sensing}, 
-  title={SCTransNet: Spatial-channel Cross Transformer Network for Infrared Small Target Detection}, 
+  title={SCTransNet: Spatial-Channel Cross Transformer Network for Infrared Small Target Detection}, 
   year={2024},
-  volume={},
+  volume={62},
   number={},
-  pages={1-1},
-  keywords={Semantics;Transformers;Decoding;Feature extraction;Task analysis;Object detection;Visualization;Infrared small target detection;transformer;cross attention;CNN;deep learning},
+  pages={1-15},
+  keywords={Semantics;Transformers;Decoding;Feature extraction;Task analysis;Object detection;Visualization;Convolutional neural network (CNN);cross-attention;deep learning;infrared small target detection (IRSTD);transformer},
   doi={10.1109/TGRS.2024.3383649}}
 ```
 
