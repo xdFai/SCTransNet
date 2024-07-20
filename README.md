@@ -1,5 +1,6 @@
 # SCTransNet: Spatial-channel Cross Transformer Network for Infrared Small Target Detection
 
+# Bilibili：https://www.bilibili.com/video/BV1kr421M7wx/?spm_id_from=333.337.search-card.all.click&vd_source=09b32caaa088f0461fba87b943069ab0
 # Chanlleges and inspiration   
 ![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture01.png)
 
