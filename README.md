@@ -2,10 +2,10 @@
 
 Shuai Yuan, Hanlin Qin, Xiang Yan, Naveed Akhtar, Aimal Main, IEEE Transactions on Geoscience and Remote Sensing 2024 [[Paper]](https://ieeexplore.ieee.org/document/10486932) [[Weight]](https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing)
 
-# Bilibili 视频讲解：
+# 所提出的SCTransNet 是PRCV 2024、ICPR 2024 Track 1、ICPR 2024 Track 2 三项比赛优胜方案的 Baseline, Bilibili 视频讲解：
 https://www.bilibili.com/video/BV1kr421M7wx/?spm_id_from=333.337.search-card.all.click&vd_source=09b32caaa088f0461fba87b943069ab0
 
-所提出的SCTransNet 是PRCV 2024、ICPR 2024 Track 1、ICPR 2024 Track 2 三项比赛冠军方案的 Baseline
+
 # Chanlleges and inspiration   
 ![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture01.png)
 
