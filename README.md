@@ -26,22 +26,6 @@ We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD
 
 3. We devise a novel complementary feed-forward network (CFN) by crossing spatial-channel information to enhance the semantic difference between the target and background.
 
-## Citation
-
-If you find the code useful, please consider citing our paper using the following BibTeX entry.
-
-```
-@ARTICLE{10486932,
-  author={Yuan, Shuai and Qin, Hanlin and Yan, Xiang and Akhtar, Naveed and Mian, Ajmal},
-  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
-  title={SCTransNet: Spatial-Channel Cross Transformer Network for Infrared Small Target Detection}, 
-  year={2024},
-  volume={62},
-  number={},
-  pages={1-15},
-  keywords={Semantics;Transformers;Decoding;Feature extraction;Task analysis;Object detection;Visualization;Convolutional neural network (CNN);cross-attention;deep learning;infrared small target detection (IRSTD);transformer},
-  doi={10.1109/TGRS.2024.3383649}}
-```
 
 ## Usage
 
@@ -125,6 +109,24 @@ python test.py
 *This code is highly borrowed from [UCTransNet](https://github.com/McGregorWwww/UCTransNet). Thanks to Haonan Wang.
 
 *The overall repository style is highly borrowed from [DNA-Net](https://github.com/YeRen123455/Infrared-Small-Target-Detection). Thanks to Boyang Li.
+
+## Citation
+
+If you find the code useful, please consider citing our paper using the following BibTeX entry.
+
+```
+@ARTICLE{10486932,
+  author={Yuan, Shuai and Qin, Hanlin and Yan, Xiang and Akhtar, Naveed and Mian, Ajmal},
+  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
+  title={SCTransNet: Spatial-Channel Cross Transformer Network for Infrared Small Target Detection}, 
+  year={2024},
+  volume={62},
+  number={},
+  pages={1-15},
+  keywords={Semantics;Transformers;Decoding;Feature extraction;Task analysis;Object detection;Visualization;Convolutional neural network (CNN);cross-attention;deep learning;infrared small target detection (IRSTD);transformer},
+  doi={10.1109/TGRS.2024.3383649}}
+```
+
 
 ## Contact
 **Welcome to raise issues or email to [yuansy@stu.xidian.edu.cn](yuansy@stu.xidian.edu.cn) or [yuansy2@student.unimelb.edu.au](yuansy2@student.unimelb.edu.au) for any question regarding our SCTransNet.**
