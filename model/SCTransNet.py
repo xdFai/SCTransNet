@@ -645,7 +645,7 @@ if __name__ == '__main__':
     config_vit = get_CTranS_config()
     model = SCTransNet(config_vit, mode='train', deepsuper=True)
     model = model
-    inputs = torch.rand(2, 1, 256, 256)
+    inputs = torch.rand(1, 1, 256, 256)
     output = model(inputs)
     flops, params = profile(model, (inputs,))
 
