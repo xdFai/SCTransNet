@@ -18,7 +18,7 @@ Bilibili 视频讲解：https://www.bilibili.com/video/BV1kr421M7wx/?spm_id_from
 
 # Introduction
 
-We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD task. Experiments on both public (e.g., NUAA-SIRST, NUDT-SIRST, IRSTD-1K) demonstrate the effectiveness of our method. Our main contributions are as follows:
+We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD task. Experiments on both public (e.g., SIRST, NUDT-SIRST, IRSTD-1K) demonstrate the effectiveness of our method. Our main contributions are as follows:
 
 1. We propose SCTransNet, leveraging spatial-channel cross transformer blocks (SCTB)  to predict the context of targets and backgrounds in the deeper network layers.
 
@@ -94,11 +94,11 @@ python test.py
 
 
 
-#### Quantitative Results on NUAA-SIRST, NUDT-SIRST, and IRSTD-1K
+#### Quantitative Results on Mixed SIRST, NUDT-SIRST, and IRSTD-1K
 
 | Model         | mIoU (x10(-2)) | nIoU (x10(-2)) | F-measure (x10(-2))| Pd (x10(-2))|  Fa (x10(-6))|
 | ------------- |:-------------:|:-----:|:-----:|:-----:|:-----:|
-| NUAA-SIRST    | 77.50  |  81.08 | 87.32 | 96.95 | 13.92 |
+| SIRST    | 77.50  |  81.08 | 87.32 | 96.95 | 13.92 |
 | NUDT-SIRST    | 94.09  |  94.38 | 96.95 | 98.62 | 4.29  | 
 | IRSTD-1K      | 68.03  |  68.15 | 80.96 | 93.27 | 10.74 |
 | [[Weights]](https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing)|
