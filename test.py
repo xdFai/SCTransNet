@@ -383,7 +383,7 @@ parser = argparse.ArgumentParser(description="PyTorch BasicIRSTD test")
 parser.add_argument('--ROC_thr', type=int, default=10, help='num')
 parser.add_argument("--model_names", default=['SCTrans'], type=list,
                     help="model_name: 'ACM', 'Ours01', 'DNANet', 'ISNet', 'ACMNet', 'Ours01', 'ISTDU-Net', 'U-Net', 'RISTDnet'")
-parser.add_argument("--pth_dirs", default=['SIRST3/ARCNet_NUAA_NUDT_IRSTD1K.pth.tar'], type=list)
+parser.add_argument("--pth_dirs", default=['SIRST3/SCTransNet_NUAA_NUDT_IRSTD1K.pth.tar'], type=list)
 parser.add_argument("--dataset_dir", default=r'D:\05TGARS\Upload\datasets', type=str, help="train_dataset_dir")
 parser.add_argument("--dataset_names", default=['NUAA-SIRST', 'NUDT-SIRST', 'IRSTD-1K'], type=list,
                     help="dataset_name: 'NUAA-SIRST', 'NUDT-SIRST', 'IRSTD-1K', 'SIRST3', 'NUDT-SIRST-Sea'")
