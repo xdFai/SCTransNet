@@ -7,6 +7,9 @@ Shuai Yuan, Hanlin Qin, Xiang Yan, Naveed Akhtar, Aimal Main, IEEE Transactions 
 # Bilibili 视频讲解
 https://www.bilibili.com/video/BV1kr421M7wx/?spm_id_from=333.337.search-card.all.click&vd_source=09b32caaa088f0461fba87b943069ab0
 
+# 极市平台 推文讲解
+https://mp.weixin.qq.com/s/H7KLmtFX7j09f-Xc6X1FRw
+
 If the implementation of this repo is helpful to you, just star it！⭐⭐⭐
 
 # Chanlleges and inspiration   
