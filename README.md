@@ -5,7 +5,7 @@ Shuai Yuan, Hanlin Qin, Xiang Yan, Naveed Akhtar, Aimal Main, IEEE Transactions 
 # SCTransNet 是PRCV 2024、ICPR 2024 Track 1、ICPR 2024 Track 2 三项比赛冠军方案的 Baseline, 同时也是多个优胜算法的Baselines. [[Paper]](https://arxiv.org/abs/2408.09615)
 
 # Bilibili 视频讲解
-https://www.bilibili.com/video/BV1kr421M7wx/?spm_id_from=333.337.search-card.all.click&vd_source=09b32caaa088f0461fba87b943069ab0
+https://www.bilibili.com/video/BV1kr421M7wx/
 
 # 极市平台 推文讲解
 https://mp.weixin.qq.com/s/H7KLmtFX7j09f-Xc6X1FRw
