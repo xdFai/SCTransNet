@@ -392,7 +392,7 @@ parser.add_argument("--img_norm_cfg", default=None, type=dict,
 parser.add_argument("--save_img", default=False, type=bool, help="save image of or not")
 parser.add_argument("--save_img_dir", type=str, default=r'D:\SCI\01_02_SCI\Result/',
                     help="path of saved image")
-parser.add_argument("--save_log", type=str, default=r'D:\05TGARS\upload\log/', help="path of saved .pth")
+parser.add_argument("--save_log", type=str, default=r'D:\05TGARS\Upload\log/', help="path of saved .pth")
 parser.add_argument("--threshold", type=float, default=0.5)
 
 global opt
@@ -412,10 +412,15 @@ def test():
     eval_05 = PD_FA()
     ROC_05 = ROCMetric05(nclass=1, bins=10)
     config_vit = config.get_SCTrans_config()
-    # net = SCTransNet(config_vit, mode='test', deepsuper=True)
-    net = SCTransNet(config_vit, mode='test', deepsuper=True).cuda()
-    state_dict = torch.load(opt.pth_dir)
-    # state_dict = torch.load(opt.pth_dir, map_location='cpu')
+
+
+    # CPU
+    net = SCTransNet(config_vit, mode='test', deepsuper=True)
+    state_dict = torch.load(opt.pth_dir, map_location='cpu')
+    # # CUDA
+    # net = SCTransNet(config_vit, mode='test', deepsuper=True).cuda()
+    # state_dict = torch.load(opt.pth_dir)
+
     new_state_dict = OrderedDict()
     #
     for k, v in state_dict['state_dict'].items():
@@ -427,11 +432,16 @@ def test():
     with torch.no_grad():
         for idx_iter, (img, gt_mask, size, img_dir) in enumerate(tbar):
             # img = Variable(img)
-            pred = net.forward(img).cuda()
-            # pred = pred[:, :, :size[0], :size[1]]
-            pred = pred[:, :, :size[0], :size[1]].cuda()
-            # gt_mask = gt_mask[:, :, :size[0], :size[1]]
-            gt_mask = gt_mask[:, :, :size[0], :size[1]].cuda()
+
+            # CPU
+            pred = net.forward(img)
+            pred = pred[:, :, :size[0], :size[1]]
+            gt_mask = gt_mask[:, :, :size[0], :size[1]]
+
+            # # CUDA:
+            # pred = net.forward(img).cuda()
+            # pred = pred[:, :, :size[0], :size[1]].cuda()
+            # gt_mask = gt_mask[:, :, :size[0], :size[1]].cuda()
 
             # Fix  threshold ##########################################################
             # IOU
@@ -439,7 +449,7 @@ def test():
             # nIOU
             nIoU_metric.update(pred, gt_mask)  # 像素
             eval_05.update((pred[0, 0, :, :] > opt.threshold).cpu(), gt_mask[0, 0, :, :], size)  # 目标
-
+            ROC_05.update(pred, gt_mask)
             # save img
             if opt.save_img == True:
                 img_save = transforms.ToPILImage()((pred[0, 0, :, :]).cpu())
