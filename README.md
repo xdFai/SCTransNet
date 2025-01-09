@@ -10,7 +10,7 @@ https://www.bilibili.com/video/BV1kr421M7wx/
 # 极市平台 推文分享
 https://mp.weixin.qq.com/s/H7KLmtFX7j09f-Xc6X1FRw
 
-If the implementation of this repo is helpful to you, just star it！⭐⭐⭐
+# If the implementation of this repo is helpful to you, just star it！⭐⭐⭐
 
 # Chanlleges and inspiration   
 ![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture01.png)
