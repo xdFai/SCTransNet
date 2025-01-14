@@ -105,7 +105,7 @@ def train():
 
 
     for idx_epoch in range(epoch_state, opt.nEpochs):
-
+        net.train()
         results1 = (0, 0)
         results2 = (0, 0)
         for idx_iter, (img, gt_mask) in enumerate(train_loader):
