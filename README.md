@@ -99,7 +99,8 @@ python test.py
 
 
 
-#### Quantitative Results on Mixed SIRST, NUDT-SIRST, and IRSTD-1K. i.e, # one weight for three Datasets.
+#### Quantitative Results on Mixed SIRST, NUDT-SIRST, and IRSTD-1K. i.e, 
+# one weight for three Datasets.
 
 | Model         | mIoU (x10(-2)) | nIoU (x10(-2)) | F-measure (x10(-2))| Pd (x10(-2))|  Fa (x10(-6))|
 | ------------- |:-------------:|:-----:|:-----:|:-----:|:-----:|
