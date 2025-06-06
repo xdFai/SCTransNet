@@ -70,9 +70,19 @@ The **SIRST3** dataset, which combines **IRSTD-1K**, **NUDT-SIRST**, and **SIRST
   │    │    ├── img_idx
   │    │    │    ├── train_NUDT-SIRST.txt
   │    │    │    ├── test_NUDT-SIRST.txt
-  │    ├── ...
-  │    ├── ...
-  │    ├── SIRST3
+  │    ├── SIRSTv1 (~which is misnamed as NUAA-SIRST~)
+  │    │    ├── images
+  │    │    │    ├── Misc_1.png
+  │    │    │    ├── Misc_2.png
+  │    │    │    ├── ...
+  │    │    ├── masks
+  │    │    │    ├── Misc_1.png
+  │    │    │    ├── Misc_2.png
+  │    │    │    ├── ...
+  │    │    ├── img_idx
+  │    │    │    ├── train_NUAA-SIRST.txt
+  │    │    │    ├── test_NUAA-SIRST.txt
+  │    ├── SIRST3 (~The sum of SIRSTv1, NUDT-SIRST and IRSTD-1K~)
   │    │    ├── images
   │    │    │    ├── XDU0.png
   │    │    │    ├── XDU1.png
