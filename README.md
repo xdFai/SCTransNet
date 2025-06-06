@@ -1,4 +1,4 @@
-# SCTransNet: Spatial-channel Cross Transformer Network for Infrared Small Target Detection [[Paper]](https://ieeexplore.ieee.org/document/10486932) [[Weight]](https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing)
+# SCTransNet: Spatial-channel Cross Transformer Network for Infrared Small Target Detection [[Paper]](https://ieeexplore.ieee.org/document/10486932) [[Weight]](https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing) 
 
 Shuai Yuan, Hanlin Qin, Xiang Yan, Naveed Akhtar, Aimal Main, IEEE Transactions on Geoscience and Remote Sensing 2024.
 
@@ -104,6 +104,7 @@ python train.py
 ```
 
 #### 3. Test and demo.
+权重文件的百度网盘链接：[[Weight]](https://pan.baidu.com/s/1_hlEaqnJI246GWN4N8k8wA?pwd=t28j）
 ```bash
 python test.py
 ```
