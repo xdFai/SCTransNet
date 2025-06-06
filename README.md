@@ -41,6 +41,8 @@ The **SIRST3** dataset, which combines **IRSTD-1K**, **NUDT-SIRST**, and **SIRST
 * **NUDT-SIRST** &nbsp; [[download]](https://github.com/YeRen123455/Infrared-Small-Target-Detection) &nbsp; [[paper]](https://ieeexplore.ieee.org/abstract/document/9864119)
 * **IRSTD-1K** &nbsp; [[download dir]](https://github.com/RuiZhang97/ISNet) &nbsp; [[paper]](https://ieeexplore.ieee.org/document/9880295)
 
+Apologies for misnaming the **SIRST-v1** dataset as **NUAA-SIRST** in both the article and code. We will follow the original authors’ naming convention in future work.
+
 * **Our project has the following structure:**
   ```
   ├──./datasets/
@@ -104,11 +106,11 @@ python test.py
 
 
 
-#### Quantitative Results on Mixed SIRST, NUDT-SIRST, and IRSTD-1K. i.e, one weight for three Datasets.
+#### Quantitative Results on Mixed SIRSTv1, NUDT-SIRST, and IRSTD-1K. i.e, one weight for three Datasets.
 
 | Model         | mIoU (x10(-2)) | nIoU (x10(-2)) | F-measure (x10(-2))| Pd (x10(-2))|  Fa (x10(-6))|
 | ------------- |:-------------:|:-----:|:-----:|:-----:|:-----:|
-| SIRST    | 77.50  |  81.08 | 87.32 | 96.95 | 13.92 |
+| SIRSTv1    | 77.50  |  81.08 | 87.32 | 96.95 | 13.92 |
 | NUDT-SIRST    | 94.09  |  94.38 | 96.95 | 98.62 | 4.29  | 
 | IRSTD-1K      | 68.03  |  68.15 | 80.96 | 93.27 | 10.74 |
 | [[Weights]](https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing)|
