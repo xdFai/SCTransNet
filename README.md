@@ -104,7 +104,7 @@ python train.py
 ```
 
 #### 3. Test and demo.
-权重文件的百度网盘链接：[[Weight]](https://pan.baidu.com/s/1_hlEaqnJI246GWN4N8k8wA?pwd=t28j）
+权重文件的百度网盘链接：https://pan.baidu.com/s/1_hlEaqnJI246GWN4N8k8wA?pwd=t28j
 ```bash
 python test.py
 ```
