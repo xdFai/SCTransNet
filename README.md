@@ -35,8 +35,8 @@ We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD
 ## Usage
 
 #### 1. Data
-#  **SIRST3** dataset is used for SCTRansNet training，which is the mixed of **IRSTD-1K**, **NUDT-SIRST** and **SIRST-v1**.
 
+The **SIRST3** dataset, which combines **IRSTD-1K**, **NUDT-SIRST**, and **SIRST-v1**, is used to train SCTransNet.
 * **SIRST-v1** &nbsp; [[download]](https://github.com/YimianDai/sirst) &nbsp; [[paper]](https://arxiv.org/pdf/2009.14530.pdf)
 * **NUDT-SIRST** &nbsp; [[download]](https://github.com/YeRen123455/Infrared-Small-Target-Detection) &nbsp; [[paper]](https://ieeexplore.ieee.org/abstract/document/9864119)
 * **IRSTD-1K** &nbsp; [[download dir]](https://github.com/RuiZhang97/ISNet) &nbsp; [[paper]](https://ieeexplore.ieee.org/document/9880295)
