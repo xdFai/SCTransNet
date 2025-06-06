@@ -36,6 +36,10 @@ We present a Spatial-channel Cross Transformer Network (SCTransNet) to the IRSTD
 
 #### 1. Data
 
+训练阶段，SCTransNet采用的三个数据集混合训练，分别是：
+* **SIRST-v1** &nbsp; [[download]](https://github.com/YimianDai/sirst) &nbsp; [[paper]](https://arxiv.org/pdf/2009.14530.pdf)
+* **NUDT-SIRST** &nbsp; [[download]](https://github.com/YeRen123455/Infrared-Small-Target-Detection) &nbsp; [[paper]](https://ieeexplore.ieee.org/abstract/document/9864119)
+* **IRSTD-1K** &nbsp; [[download dir]](https://github.com/RuiZhang97/ISNet) &nbsp; [[paper]](https://ieeexplore.ieee.org/document/9880295)
 * **Our project has the following structure:**
   ```
   ├──./datasets/
