@@ -12,7 +12,7 @@ https://mp.weixin.qq.com/s/H7KLmtFX7j09f-Xc6X1FRw
 
 # If the implementation of this repo is helpful to you, just star it！⭐⭐⭐
 
-# Chanlleges and inspiration   
+# Challenges and inspiration   
 ![Image text](https://github.com/xdFai/SCTransNet/blob/main/Fig/picture01.png)
 
 # Structure
@@ -105,6 +105,7 @@ python train.py
 
 #### 3. Test and demo.
 权重文件的百度网盘链接：https://pan.baidu.com/s/1_hlEaqnJI246GWN4N8k8wA?pwd=t28j
+权重文件的谷歌云盘链接：https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing
 ```bash
 python test.py
 ```
