@@ -104,7 +104,7 @@ python train.py
 ```
 
 #### 3. Test and demo.
-权重文件的百度网盘链接：https://pan.baidu.com/s/1_hlEaqnJI246GWN4N8k8wA?pwd=t28j
+权重文件的百度网盘链接：[https://pan.baidu.com/s/1_hlEaqnJI246GWN4N8k8wA?pwd=t28j](https://pan.baidu.com/s/1B0mANHXSfJaQjHr00XIwgQ?pwd=s7nh)
 
 权重文件的谷歌云盘链接：https://drive.google.com/file/d/1Kxs2wKG2uq2YiGJOBGWoVz7B1-8DJoz3/view?usp=sharing
 ```bash
